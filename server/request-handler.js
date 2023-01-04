@@ -38,18 +38,20 @@ var requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+  headers['Content-Type'] = 'application/json';
 
   if (request.method === 'POST' && request.url.includes('/classes/messages')) {
-    var body = '';
+    var body = [];
     request.on('data', function(data) {
-      body += data;
+      body.push(data);
     });
     request.on('end', function() {
-      var post = qs.parse(body);
-      console.log(post);
+      var post = JSON.stringify(body);
+      //post = qs.parse(post);
+      //console.log(post);
       // .writeHead() writes to the request line and headers of the response,
       // which includes the status and all headers.
+      statusCode = 201;
       response.writeHead(statusCode, headers);
       // Make sure to always call response.end() - Node may not send
       // anything back to the client until you do. The string you pass to
@@ -58,19 +60,24 @@ var requestHandler = function(request, response) {
       //
       // Calling .end "flushes" the response's internal buffer, forcing
       // node to actually send all the data over to the client.
-      response.end('Hello, World!');
+      console.log('THIS IS THE POST: ', post);
+      response.end(post);
 
     });
-  }
-  if (request.method === 'GET' && request.url.includes('/classes/messages')) {
+  } else if (request.method === 'GET' && request.url.includes('/classes/messages')) {
     var messageData = [];
     request.on('data', function(data) {
       messageData.push(data);
     });
     request.on('end', function() {
+      //var messages = messageData.toString();
+      var messages = JSON.stringify(messageData);
       response.writeHead(statusCode, headers);
-      response.end('Get all the data');
+      response.end(messages);
     });
+  } else {
+    response.writeHead(404, headers);
+    response.end();
   }
 
 
