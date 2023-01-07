@@ -56,7 +56,7 @@ var requestHandler = function(request, response) {
       messageData.push(JSON.parse(data));
     });
     request.on('end', function() {
-
+    //trying stuff
       //post = qs.parse(post);
       //console.log(post);
       // .writeHead() writes to the request line and headers of the response,
