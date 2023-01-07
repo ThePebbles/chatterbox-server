@@ -125,4 +125,31 @@ describe('Node Server Request Listener Function', function() {
     expect(res._responseCode).to.equal(405);
     expect(res._ended).to.equal(true);
   });
+
+  it('Should have an id', function() {
+    var stubMsg = {
+      username: 'Tony',
+      text: 'I am working correctly!'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    //console.log(res._data);
+    expect(res._data).to.include('id');
+  });
+
+  it('Should increase length of data array after POST request for /classes/messages', function() {
+    var stubMsg = {
+      username: 'Tony',
+      text: 'I am working correctly!'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+    handler.requestHandler(req, res);
+    var oldCount = res._data.length;
+    handler.requestHandler(req, res);
+    var newCount = res._data.length;
+    expect(oldCount).to.not.equal(newCount);
+  });
 });
