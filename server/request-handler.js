@@ -89,6 +89,20 @@ var requestHandler = function(request, response) {
     //console.log('THESE ARE THE MESSAGES: ', messages);
     response.end(JSON.stringify(messageData));
     //});
+  } else if (request.method === 'OPTIONS' && request.url.includes('/classes/messages')) {
+    response.writeHead(statusCode, headers);
+    //console.log('THESE ARE THE MESSAGES: ', messages);
+    response.end(JSON.stringify(messageData));
+  } else if (request.method === 'DELETE' && request.url.includes('/classes/messages')) {
+
+    response.writeHead(405, headers);
+    response.end();
+
+  } else if (request.method === 'PUT' && request.url.includes('/classes/messages')) {
+
+    response.writeHead(405, headers);
+    response.end();
+
   } else {
     response.writeHead(404, headers);
     response.end();
