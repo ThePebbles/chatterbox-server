@@ -12,6 +12,13 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var qs = require('qs');
+var messageData = [];
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept, authorization',
+  'access-control-max-age': 10 // Seconds.
+};
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
@@ -43,15 +50,19 @@ var requestHandler = function(request, response) {
   if (request.method === 'POST' && request.url.includes('/classes/messages')) {
     var body = [];
     request.on('data', function(data) {
-      body.push(data);
+      //console.log('THIS IS DATA', data);
+      //console.log('JSON TEST', JSON.parse(data));
+      body.push(JSON.parse(data));
+      messageData.push(JSON.parse(data));
     });
     request.on('end', function() {
-      var post = JSON.stringify(body);
+
       //post = qs.parse(post);
       //console.log(post);
       // .writeHead() writes to the request line and headers of the response,
       // which includes the status and all headers.
       statusCode = 201;
+      //console.log('THE HEADER', headers);
       response.writeHead(statusCode, headers);
       // Make sure to always call response.end() - Node may not send
       // anything back to the client until you do. The string you pass to
@@ -60,21 +71,24 @@ var requestHandler = function(request, response) {
       //
       // Calling .end "flushes" the response's internal buffer, forcing
       // node to actually send all the data over to the client.
-      console.log('THIS IS THE POST: ', post);
-      response.end(post);
+      console.log('THIS IS THE POST: ', body);
+      //response.end(JSON.stringify(body));
+      response.end(JSON.stringify(body));
 
     });
   } else if (request.method === 'GET' && request.url.includes('/classes/messages')) {
-    var messageData = [];
-    request.on('data', function(data) {
-      messageData.push(data);
-    });
-    request.on('end', function() {
-      //var messages = messageData.toString();
-      var messages = JSON.stringify(messageData);
-      response.writeHead(statusCode, headers);
-      response.end(messages);
-    });
+    // console.log('GET REQUEST MADE');
+    // var messageData;
+    // request.on('data', function(data) {
+    //   messageData = data;
+    // });
+    // request.on('end', function() {
+    //var messages = messageData.toString();
+    //var messages = Buffer.concat(messageData).toString();
+    response.writeHead(statusCode, headers);
+    //console.log('THESE ARE THE MESSAGES: ', messages);
+    response.end(JSON.stringify(messageData));
+    //});
   } else {
     response.writeHead(404, headers);
     response.end();
@@ -93,11 +107,6 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept, authorization',
-  'access-control-max-age': 10 // Seconds.
-};
+
 exports.requestHandler = requestHandler;
 //testing
