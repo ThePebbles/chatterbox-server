@@ -52,8 +52,13 @@ var requestHandler = function(request, response) {
     request.on('data', function(data) {
       //console.log('THIS IS DATA', data);
       //console.log('JSON TEST', JSON.parse(data));
-      body.push(JSON.parse(data));
-      messageData.push(JSON.parse(data));
+      //parse
+      var message = JSON.parse(data);
+      //add id key and value
+      message.id = messageData.length + 1;
+      //then push to body and messageData
+      body.push(message);
+      messageData.push(message);
     });
     request.on('end', function() {
     //trying stuff
@@ -73,7 +78,7 @@ var requestHandler = function(request, response) {
       // node to actually send all the data over to the client.
       console.log('THIS IS THE POST: ', body);
       //response.end(JSON.stringify(body));
-      response.end(JSON.stringify(body));
+      response.end(JSON.stringify(messageData));
 
     });
   } else if (request.method === 'GET' && request.url.includes('/classes/messages')) {
